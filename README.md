@@ -17,6 +17,8 @@ pip install -r requirements.txt
 python -m bot.main
 ```
 
+`WEEKLY_REPORT_DOW` define o dia da semana do relatório semanal e aceita valores de 1 (segunda-feira) a 7 (domingo).
+
 ### Modo ativo
 
 Defina `MODE=active` no `.env` e forneça `PRIVATE_KEY`/`HL_API_SECRET`. Por padrão apenas o hedge perp é executado; para permitir operações na LP ajuste `ENABLE_LP_EXECUTIONS=true`.

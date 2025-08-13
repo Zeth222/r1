@@ -19,4 +19,5 @@ def schedule_main_loop(scheduler: AsyncIOScheduler, func: Callable[[], Awaitable
 def schedule_reports(scheduler: AsyncIOScheduler, daily: Callable[[], Awaitable[None]], weekly: Callable[[], Awaitable[None]], *, hour: int, dow: int) -> None:
     """Schedule daily and weekly report jobs."""
     scheduler.add_job(daily, CronTrigger(hour=hour))
-    scheduler.add_job(weekly, CronTrigger(day_of_week=dow, hour=hour))
+    normalized_dow = dow % 7
+    scheduler.add_job(weekly, CronTrigger(day_of_week=normalized_dow, hour=hour))
