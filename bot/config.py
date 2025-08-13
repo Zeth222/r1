@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, AnyUrl, field_validator
+from pydantic import AnyUrl, field_validator
 from typing import Literal
 
 
@@ -12,8 +12,8 @@ class Settings(BaseSettings):
 
     MODE: Literal["viewer", "active"] = "viewer"
     NETWORK: str = "arbitrum"
-    UNISWAP_SUBGRAPH_URL: AnyUrl
-    WALLET_ADDRESS: str
+    UNISWAP_SUBGRAPH_URL: AnyUrl = "https://example.com"
+    WALLET_ADDRESS: str = "0x0"
     PRIVATE_KEY: str | None = None
     HL_API_KEY: str | None = None
     HL_API_SECRET: str | None = None
