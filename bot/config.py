@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from pydantic import BaseSettings, Field, AnyUrl, validator
+from pydantic import Field, AnyUrl, field_validator
+from pydantic_settings import BaseSettings
 from typing import Literal
 
 
@@ -39,7 +40,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-    @validator("MODE")
+    @field_validator("MODE", mode="before")
     def _lower_mode(cls, v: str) -> str:  # noqa: D401
         """Normalize mode to lowercase."""
         return v.lower()
