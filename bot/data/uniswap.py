@@ -61,9 +61,8 @@ def position_delta(position: Dict[str, Any]) -> float:
     token1 = pool["token1"]["symbol"]
     decimals0 = int(pool["token0"]["decimals"])
     decimals1 = int(pool["token1"]["decimals"])
-    amount0 /= 10 ** decimals0
-    amount1 /= 10 ** decimals1
+    # amounts are already in token units; decimals retained for completeness
     # assume token0=WETH token1=USDC
-    price = (sqrt_price ** 2)
+    price = sqrt_price**2
     exposure = amount0 - amount1 / price
     return exposure
