@@ -25,7 +25,10 @@ query($owner: String!) {
 async def fetch_positions(client: httpx.AsyncClient, owner: str) -> List[Dict[str, Any]]:
     """Fetch positions from The Graph subgraph."""
     settings = get_settings()
-    resp = await client.post(settings.UNISWAP_SUBGRAPH_URL, json={"query": QUERY, "variables": {"owner": owner}})
+    resp = await client.post(
+        str(settings.UNISWAP_SUBGRAPH_URL),
+        json={"query": QUERY, "variables": {"owner": owner}},
+    )
     resp.raise_for_status()
     data = resp.json()["data"]["positions"]
     return data
