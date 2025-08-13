@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     COOLDOWN_SEC: int = 15
     FUNDING_ALERT_PCT: float = 0.15
     DAILY_REPORT_HOUR: int = 20
-    WEEKLY_REPORT_DOW: int = 7
+    WEEKLY_REPORT_DOW: int = 7  # 1=Monday, 7=Sunday
     TZ: str = "America/Sao_Paulo"
     ENABLE_LP_EXECUTIONS: bool = False
     MAX_SLIPPAGE_BPS: int = 20
@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     def _lower_mode(cls, v: str) -> str:  # noqa: D401
         """Normalize mode to lowercase."""
         return v.lower()
+
+    @field_validator("WEEKLY_REPORT_DOW")
+    def _normalize_weekly_report_dow(cls, v: int) -> int:
+        """Ensure 1-7 input and convert to 0-6 for CronTrigger."""
+        if not 1 <= v <= 7:
+            raise ValueError("WEEKLY_REPORT_DOW must be between 1 and 7")
+        return (v - 1) % 7
 
 
 @lru_cache
