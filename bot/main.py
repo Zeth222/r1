@@ -11,17 +11,32 @@ from .scheduler import create_scheduler, schedule_main_loop, schedule_reports
 from .executor import Executor
 from .hedge import rebalance
 from .data import uniswap, hyperliquid, prices
+from . import risk
 from .reports import build_daily_report, build_weekly_report
 
 
 async def main_loop(client: httpx.AsyncClient, notifier: Notifier, executor: Executor, oracle: prices.PriceOracle) -> None:
     settings = get_settings()
-    try:
-        positions = await uniswap.fetch_positions(client, settings.WALLET_ADDRESS)
-        lp_delta = sum(uniswap.position_delta(p) for p in positions)
-    except Exception as exc:  # pragma: no cover - external call
-        await notifier.send_message(f"Uniswap fetch failed: {exc}", key="uniswap-error")
-        return
+    positions = await uniswap.fetch_positions(client, settings.WALLET_ADDRESS, first=100)
+    pool_id = positions[0]["pool"]["id"] if positions else None
+    pool_state = await uniswap.fetch_pool_state(client, pool_id)
+    delta = uniswap.compute_lp_delta_safely(positions, pool_state)
+    if delta is None:
+        await notifier.once(
+            "warn_uniswap_down",
+            "⚠️ Uniswap subgraph: dados indisponíveis (mantendo modo seguro).",
+        )
+        if settings.MODE == "active":
+            risk.enter_safe_mode(reason="uniswap_unavailable")
+        lp_delta = 0.0
+    else:
+        await notifier.once(
+            "uniswap_recovered",
+            "✅ Uniswap subgraph: dados restabelecidos.",
+        )
+        if settings.MODE == "active":
+            risk.exit_safe_mode(reason="uniswap_unavailable")
+        lp_delta = delta
     try:
         perp = await hyperliquid.fetch_positions(client, settings.WALLET_ADDRESS)
         perp_pos = float(perp.get("position", 0.0))
@@ -32,7 +47,15 @@ async def main_loop(client: httpx.AsyncClient, notifier: Notifier, executor: Exe
         return
     price = await oracle.fetch_price(client, "ethereum")
     atr = oracle.atr()
-    result = await rebalance(executor, lp_delta=lp_delta, perp_position=perp_pos, price=price, margin=margin, atr=atr, funding_apr=funding_apr)
+    result = await rebalance(
+        executor,
+        lp_delta=lp_delta,
+        perp_position=perp_pos,
+        price=price,
+        margin=margin,
+        atr=atr,
+        funding_apr=funding_apr,
+    )
     if result.action == "adjust":
         await notifier.send_message(f"Hedge adjusted to {result.hedge_size:.4f} WETH, lev {result.target_leverage:.2f}")
 
