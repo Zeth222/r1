@@ -21,8 +21,8 @@ def schedule_main_loop(
 ) -> None:
     """Schedule main loop job."""
 
-    def job() -> asyncio.Task[Any]:
-        return asyncio.create_task(func(*args))
+    async def job() -> None:
+        await func(*args)
 
     scheduler.add_job(job, "interval", seconds=interval, id="main-loop", replace_existing=True)
 
