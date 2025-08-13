@@ -45,7 +45,12 @@ async def async_main() -> None:
     async with httpx.AsyncClient(timeout=10) as client:
         executor = Executor(client)
         scheduler = create_scheduler(settings.TZ)
-        schedule_main_loop(scheduler, lambda: main_loop(client, notifier, executor, oracle), interval=5)
+        schedule_main_loop(
+            scheduler,
+            main_loop,
+            args=(client, notifier, executor, oracle),
+            interval=5,
+        )
         schedule_reports(
             scheduler,
             lambda: notifier.send_report(build_daily_report()),
