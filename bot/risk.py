@@ -1,5 +1,7 @@
-"""Risk management helpers."""
+"""Risk management helpers and safe-mode toggles."""
 from __future__ import annotations
+
+from typing import Set
 
 from .config import get_settings
 
@@ -24,3 +26,29 @@ def kill_switch(delta: float, notional_lp: float, margin_ratio: float) -> bool:
     if margin_ratio < (1 + s.MIN_MARGIN_BUFFER_PCT):
         return True
     return False
+
+
+# ---------------------------------------------------------------------------
+# Safe mode helpers
+# ---------------------------------------------------------------------------
+
+_SAFE_REASONS: Set[str] = set()
+
+
+def enter_safe_mode(*, reason: str) -> None:
+    """Activate safe mode for the given reason."""
+
+    _SAFE_REASONS.add(reason)
+
+
+def exit_safe_mode(*, reason: str) -> None:
+    """Deactivate safe mode for the given reason if present."""
+
+    _SAFE_REASONS.discard(reason)
+
+
+def in_safe_mode() -> bool:
+    """Return True if any safe mode reason is active."""
+
+    return bool(_SAFE_REASONS)
+
