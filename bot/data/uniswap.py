@@ -114,16 +114,22 @@ def require_field(obj: Any, path: List[str]) -> tuple[Optional[Any], str]:
     return cur, ""
 
 
+def _with_thegraph_api_key(url: str) -> str:
+    """Return ``url`` with ``THEGRAPH_API_KEY`` injected when needed."""
+
+    api_key = os.getenv("THEGRAPH_API_KEY")
+    if api_key and "/api/" in url and f"/{api_key}/" not in url:
+        return url.replace("/api/", f"/api/{api_key}/", 1)
+    return url
+
+
 def _subgraph_url() -> Optional[str]:
     """Return Uniswap subgraph URL with API key if available."""
 
     url = os.getenv("UNISWAP_SUBGRAPH_URL")
     if not url:
         return None
-    api_key = os.getenv("THEGRAPH_API_KEY")
-    if api_key and "/api/" in url and f"/{api_key}/" not in url:
-        url = url.replace("/api/", f"/api/{api_key}/", 1)
-    return url
+    return _with_thegraph_api_key(url)
 
 
 @retry(
@@ -135,6 +141,7 @@ async def graphql_query(
     session: httpx.AsyncClient, url: str, query: str, variables: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Execute a GraphQL POST with retry/backoff."""
+    url = _with_thegraph_api_key(url)
 
     headers = {"content-type": "application/json"}
     api_key = os.getenv("THEGRAPH_API_KEY")
