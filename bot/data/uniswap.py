@@ -20,6 +20,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import httpx
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
+from ..config import get_settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -117,10 +119,12 @@ def require_field(obj: Any, path: List[str]) -> tuple[Optional[Any], str]:
 def _subgraph_url() -> Optional[str]:
     """Return Uniswap subgraph URL with API key if available."""
 
-    url = os.getenv("UNISWAP_SUBGRAPH_URL")
+    settings = get_settings()
+    url = settings.UNISWAP_SUBGRAPH_URL
     if not url:
         return None
-    api_key = os.getenv("THEGRAPH_API_KEY")
+    url = str(url)
+    api_key = settings.THEGRAPH_API_KEY or os.getenv("THEGRAPH_API_KEY")
     if api_key and "/api/" in url and f"/{api_key}/" not in url:
         url = url.replace("/api/", f"/api/{api_key}/", 1)
     return url

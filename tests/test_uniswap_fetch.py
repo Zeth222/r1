@@ -1,6 +1,7 @@
 import asyncio
 import httpx
 
+from bot.config import get_settings
 from bot.data import uniswap
 
 
@@ -10,6 +11,7 @@ def test_fetch_positions_handles_null(monkeypatch):
 
     transport = httpx.MockTransport(handler)
     monkeypatch.setenv("UNISWAP_SUBGRAPH_URL", "http://example.com")
+    get_settings.cache_clear()
 
     async def run():
         async with httpx.AsyncClient(transport=transport) as client:
@@ -25,6 +27,7 @@ def test_fetch_positions_empty(monkeypatch):
 
     transport = httpx.MockTransport(handler)
     monkeypatch.setenv("UNISWAP_SUBGRAPH_URL", "http://example.com")
+    get_settings.cache_clear()
 
     async def run():
         async with httpx.AsyncClient(transport=transport) as client:
@@ -40,6 +43,7 @@ def test_fetch_positions_with_errors(monkeypatch):
 
     transport = httpx.MockTransport(handler)
     monkeypatch.setenv("UNISWAP_SUBGRAPH_URL", "http://example.com")
+    get_settings.cache_clear()
 
     async def run():
         async with httpx.AsyncClient(transport=transport) as client:
@@ -53,6 +57,7 @@ def test_subgraph_url_includes_api_key(monkeypatch):
     base = "https://gateway.thegraph.com/api/subgraphs/id/XYZ"
     monkeypatch.setenv("UNISWAP_SUBGRAPH_URL", base)
     monkeypatch.setenv("THEGRAPH_API_KEY", "ABC123")
+    get_settings.cache_clear()
     assert (
         uniswap._subgraph_url()
         == "https://gateway.thegraph.com/api/ABC123/subgraphs/id/XYZ"
