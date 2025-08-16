@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     MODE: Literal["viewer", "active"] = "viewer"
     NETWORK: str = "arbitrum"
     UNISWAP_SUBGRAPH_URL: AnyUrl = "https://example.com"
+    THEGRAPH_API_KEY: str | None = None
     WALLET_ADDRESS: str = "0x0"
     PRIVATE_KEY: str | None = None
     HL_WALLET_ADDRESS: str | None = None

@@ -114,6 +114,18 @@ def require_field(obj: Any, path: List[str]) -> tuple[Optional[Any], str]:
     return cur, ""
 
 
+def _subgraph_url() -> Optional[str]:
+    """Return Uniswap subgraph URL with API key if available."""
+
+    url = os.getenv("UNISWAP_SUBGRAPH_URL")
+    if not url:
+        return None
+    api_key = os.getenv("THEGRAPH_API_KEY")
+    if api_key and "/api/" in url and f"/{api_key}/" not in url:
+        url = url.replace("/api/", f"/api/{api_key}/", 1)
+    return url
+
+
 @retry(
     wait=wait_exponential(multiplier=1, min=1),
     stop=stop_after_attempt(3),
@@ -181,7 +193,7 @@ async def fetch_positions(
     data.  Pagination via ``id_gt`` is supported transparently.
     """
 
-    url = os.getenv("UNISWAP_SUBGRAPH_URL")
+    url = _subgraph_url()
     if not url:
         logger.warning(json.dumps({"source": "uniswap", "reason": "missing_url"}))
         return None
@@ -224,7 +236,7 @@ async def fetch_pool_state(
     if not pool_id:
         return None
 
-    url = os.getenv("UNISWAP_SUBGRAPH_URL")
+    url = _subgraph_url()
     if not url:
         logger.warning(json.dumps({"source": "uniswap", "reason": "missing_url"}))
         return None
