@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     UNISWAP_SUBGRAPH_URL: AnyUrl = "https://example.com"
     WALLET_ADDRESS: str = "0x0"
     PRIVATE_KEY: str | None = None
-    HL_API_KEY: str | None = None
-    HL_API_SECRET: str | None = None
+    HL_WALLET_ADDRESS: str | None = None
+    HL_PRIVATE_KEY: str | None = None
     TELEGRAM_TOKEN: str | None = None
     TELEGRAM_CHAT_ID: str | None = None
     PAIR: str = "WETH/USDC"

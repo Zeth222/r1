@@ -4,7 +4,7 @@ Bot em Python para hedge dinâmico entre posição LP Uniswap v3 (WETH/USDC na A
 
 ## Setup
 
-1. Crie um `.env` a partir de `.env.example` e preencha as chaves necessárias (`TELEGRAM_TOKEN`, `TELEGRAM_CHAT_ID`, `WALLET_ADDRESS`, etc).
+1. Crie um `.env` a partir de `.env.example` e preencha as chaves necessárias (`TELEGRAM_TOKEN`, `TELEGRAM_CHAT_ID`, `WALLET_ADDRESS`, `HL_WALLET_ADDRESS`, etc).
 2. Instale o SDK da Hyperliquid e demais dependências:
 
 ```bash
@@ -23,7 +23,7 @@ python -m bot.main
 
 ### Modo ativo
 
-Defina `MODE=active` no `.env` e forneça `PRIVATE_KEY`/`HL_API_SECRET`. Por padrão apenas o hedge perp é executado; para permitir operações na LP ajuste `ENABLE_LP_EXECUTIONS=true`.
+Defina `MODE=active` no `.env` e forneça `PRIVATE_KEY`/`HL_PRIVATE_KEY`. Por padrão apenas o hedge perp é executado; para permitir operações na LP ajuste `ENABLE_LP_EXECUTIONS=true`.
 
 ### Configuração Hyperliquid
 
@@ -32,7 +32,7 @@ O SDK segue o [`config.json` de exemplo](https://github.com/hyperliquid/py-sdk/b
 - `account_address`: endereço da carteira principal.
 - `secret_key`: chave privada usada para assinar (pode ser de uma carteira API).
 
-No `.env` estes campos correspondem a `HL_API_KEY` e `HL_API_SECRET`. A carteira API é opcional, mas recomendada:
+No `.env` estes campos correspondem a `HL_WALLET_ADDRESS` e `HL_PRIVATE_KEY`. A carteira API é opcional, mas recomendada:
 
 - Gere uma API wallet na interface da Hyperliquid e anote a `secret_key`.
 - `account_address` permanece o endereço da carteira principal.
