@@ -48,6 +48,14 @@ def test_fetch_positions_with_errors(monkeypatch):
     res = asyncio.run(run())
     assert res is None
 
+def test_with_thegraph_api_key_helper(monkeypatch):
+    base = "https://gateway.thegraph.com/api/subgraphs/id/XYZ"
+    monkeypatch.setenv("THEGRAPH_API_KEY", "ABC123")
+    assert (
+        uniswap._with_thegraph_api_key(base)
+        == "https://gateway.thegraph.com/api/ABC123/subgraphs/id/XYZ"
+    )
+
 
 def test_subgraph_url_includes_api_key(monkeypatch):
     base = "https://gateway.thegraph.com/api/subgraphs/id/XYZ"
