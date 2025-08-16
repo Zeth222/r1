@@ -13,3 +13,4 @@ uvloop==0.19.0; sys_platform != 'win32'
 orjson==3.10.7
 sqlalchemy==2.0.32
 pytest==8.2.2
+hyperliquid-python-sdk

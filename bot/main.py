@@ -38,7 +38,7 @@ async def main_loop(client: httpx.AsyncClient, notifier: Notifier, executor: Exe
             risk.exit_safe_mode(reason="uniswap_unavailable")
         lp_delta = delta
     try:
-        perp = await hyperliquid.fetch_positions(client, settings.WALLET_ADDRESS)
+        perp = await hyperliquid.fetch_positions(settings.WALLET_ADDRESS)
         perp_pos = float(perp.get("position", 0.0))
         margin = float(perp.get("margin", 0.0))
         funding_apr = float(perp.get("fundingApr", 0.0))
